@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #121212;
+  --color-surface: #1E1E1E;
+  --color-p1: #FFB085;
+  --color-p2: #98D8AA;
+  --color-off-white: #F5F5F5;
+  
+  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-off-white font-sans overflow-hidden select-none;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@layer utilities {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .text-neon-p1 {
+    text-shadow: 0 0 10px rgba(255, 176, 133, 0.5);
+  }
+  
+  .text-neon-p2 {
+    text-shadow: 0 0 10px rgba(152, 216, 170, 0.5);
+  }
+}
