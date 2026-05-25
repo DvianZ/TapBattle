@@ -30,17 +30,32 @@ const App: React.FC = () => {
     setCountdown(3);
   };
 
-  const finishGame = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
+  const gameStateRef = useRef<GameState>(gameState);
+  const scoresRef = useRef({ p1: 0, p2: 0 });
+
+  useEffect(() => {
+    gameStateRef.current = gameState;
+  }, [gameState]);
+
+  useEffect(() => {
+    scoresRef.current = { p1: scoreP1, p2: scoreP2 };
+  }, [scoreP1, scoreP2]);
+
+  const finishGameAction = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
     
+    const { p1, p2 } = scoresRef.current;
     let result: 'P1' | 'P2' | 'DRAW';
-    if (scoreP1 > scoreP2) result = 'P1';
-    else if (scoreP2 > scoreP1) result = 'P2';
+    if (p1 > p2) result = 'P1';
+    else if (p2 > p1) result = 'P2';
     else result = 'DRAW';
     
     setWinner(result);
     setGameState('result');
-  }, [scoreP1, scoreP2]);
+  }, []);
 
   // Handle Countdown
   useEffect(() => {
@@ -63,20 +78,25 @@ const App: React.FC = () => {
   // Handle Timer
   useEffect(() => {
     if (gameState === 'playing') {
-      timerRef.current = setInterval(() => {
+      timerRef.current = window.setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
-            finishGame();
+            if (timerRef.current) clearInterval(timerRef.current);
+            finishGameAction();
             return 0;
           }
           return prev - 1;
         });
       }, 1000);
+      
       return () => {
-        if (timerRef.current) clearInterval(timerRef.current);
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
       };
     }
-  }, [gameState, finishGame]);
+  }, [gameState, finishGameAction]);
 
   const handleTapP1 = () => {
     if (gameState !== 'playing') return;
